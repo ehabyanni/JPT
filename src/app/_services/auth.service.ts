@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { delay, Observable, of, throwError } from 'rxjs';
-import { IRegister } from '../_interfaces/IRegister';
+
+import { IUser } from '../_interfaces/IUSer';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +16,7 @@ export class AuthService {
 
     // Check if user already exists
     const userExists = usersRegistered.find(
-      (user: IRegister) => user.email === email
+      (user: IUser) => user.email === email
     );
 
     if (userExists) {
@@ -43,7 +42,7 @@ export class AuthService {
     );
 
     const matchedUser = usersRegistered.find(
-      (user: { email: string; password: string }) =>
+      (user: IUser) =>
         user.email === email && user.password === password
     );
 
