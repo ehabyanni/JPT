@@ -7,8 +7,25 @@
         method="post"
         (ngSubmit)="onSubmit()"
         id="formID"
+        class="formDiv"
       >
-        <div class="emailLogin">
+        <div class="nameRegister">
+          <label for="name">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            placeholder="Enter your name"
+            formControlName="name"
+            autocomplete="off"
+            [class.is-invalid]="NAME?.invalid && NAME?.touched"
+          />
+          <div *ngIf="NAME?.errors && NAME?.touched">
+            <small *ngIf="NAME?.errors?.['required']">Required</small>
+            <small *ngIf="NAME?.errors?.['minlength']">Minimum 3 char</small>
+          </div>
+        </div>
+
+        <div class="emailRegister">
           <label for="email">Email</label>
           <input
             type="email"
@@ -20,12 +37,11 @@
           />
           <div *ngIf="EMAIL?.errors && EMAIL?.touched">
             <small *ngIf="EMAIL?.errors?.['required']">Required</small>
-            <small *ngIf="EMAIL?.errors?.['email']">Invalid email format</small
-            >
+            <small *ngIf="EMAIL?.errors?.['email']">Invalid email format</small>
           </div>
         </div>
 
-        <div class="passwordLogin">
+        <div class="passwordRegister">
           <label for="password">Password</label>
           <input
             type="password"
@@ -43,6 +59,47 @@
           </div>
         </div>
 
+        <div class="addressRegister">
+          <label for="address">Address</label>
+          <input
+            type="text"
+            id="address"
+            placeholder="Enter your address"
+            formControlName="address"
+            autocomplete="off"
+            [class.is-invalid]="ADDRESS?.invalid && ADDRESS?.touched"
+          />
+        </div>
+
+        <div class="phoneRegister">
+          <label for="phone">Phone Number</label>
+          <input
+            type="text"
+            id="phone"
+            placeholder="Enter your phone"
+            formControlName="phone_number"
+            autocomplete="off"
+            [class.is-invalid]="PHONE?.invalid && PHONE?.touched"
+          />
+          <div *ngIf="PHONE?.errors && PHONE?.touched">
+            <small *ngIf="PHONE?.errors?.['pattern']"
+              >Invalid phone number</small
+            >
+          </div>
+        </div>
+
+        <div class="birthdateRegister">
+          <label for="birthdate">Date of Birth</label>
+          <input
+            type="date"
+            id="birthdate"
+            placeholder="Enter your birthdate"
+            formControlName="birthdate"
+            autocomplete="off"
+            [class.is-invalid]="PHONE?.invalid && PHONE?.touched"
+          />
+        </div>
+
         <div class="subBtn">
           <button
             [disabled]="EMAIL?.invalid || PASSWORD?.invalid"
@@ -51,16 +108,16 @@
             Sign up
           </button>
         </div>
-
-        <div class="login">
-          <p>Already have an Account, </p>
-          <a routerLink="/login">Login</a>
-        </div>
-
-        <p style="color: red; font-size: 12px; margin-top: 10px">
-          {{ registrationError }}
-        </p>
       </form>
+
+      <div class="login">
+        <p>Already have an Account,</p>
+        <a routerLink="/login">Login</a>
+      </div>
+
+      <p style="color: red; font-size: 12px; margin-top: 10px">
+        {{ registrationError }}
+      </p>
     </div>
   </div>
 </div>

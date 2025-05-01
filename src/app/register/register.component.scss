@@ -2,11 +2,14 @@
   font-family: sans-serif;
 }
 
-//variables
+// Variables
 $blacks: #0000;
 $greys: rgb(75, 75, 75);
+$text-color: rgb(36, 36, 36);
+$border: rgb(161, 161, 161);
+$primary: #56d9d9;
 
-//shared class
+// Shared classes
 %flexbox {
   display: flex;
   flex-direction: column;
@@ -14,93 +17,122 @@ $greys: rgb(75, 75, 75);
 
 %RowFlex {
   display: flex;
-  justify-items: center;
   justify-content: center;
+  align-items: center;
 }
 
+// Main container
 .container1 {
   height: 100vh;
   width: 100%;
-  background-color: rgb(255, 255, 255);
+  background-color: #fff;
   @extend %RowFlex;
+  animation: login 2s ease-in-out;
+  position: relative;
+
   .container2 {
-    width: 35%;
+    width: 70%;
+    max-width: 1200px;
     height: 100%;
-    background-color: rgb(255, 255, 255);
+    background-color: #fff;
     @extend %RowFlex;
+
     .container3 {
       margin: auto;
-      background-color: rgb(255, 255, 255);
+      background-color: #fff;
       width: 100%;
     }
+
     h2 {
       color: $greys;
       font-weight: normal;
       margin-bottom: 16px;
     }
-    .emailLogin {
-      @extend %flexbox;
-      padding-top: 20px;
-    }
-    .passwordLogin {
-      @extend %flexbox;
-      padding: 20px 0px;
-    }
-    label {
-      text-align: left;
-      font-weight: bold;
-      color: rgb(36, 36, 36);
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-    input {
-      width: 100%;
-      height: 25px;
-      padding: 15px 5px;
-      border: 1px solid rgb(161, 161, 161);
-      border-radius: 5px;
-      outline: none;
-    }
-    button {
-      margin: 0%;
-      width: 100%;
-      height: 35px;
-      border: 1.7px solid #56d9d9;
-      border-radius: 5px;
-      border: none;
-      color: rgb(36, 36, 36);
-      font-size: 16px;
-      background-color: #56d9d9;
-      cursor: pointer;
 
-      &:hover {
-        background-color: #ffffff;
-        border: 1.7px solid #56d9d9;
+    .formDiv {
+      background-color: #fff;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      width: 100%;
+
+      .nameRegister,
+      .emailRegister,
+      .phoneRegister,
+      .passwordRegister,
+      .addressRegister,
+      .birthdateRegister {
+        @extend %flexbox;
+        padding: 5px 0px;
+        width: 100%;
+
+        label {
+          text-align: left;
+          font-weight: bold;
+          color: $text-color;
+          font-size: 14px;
+          margin-bottom: 5px;
+        }
+
+        input {
+          width: 90%;
+          height: 40px;
+          padding: 0 10px;
+          border: 1px solid $border;
+          border-radius: 5px;
+          outline: none;
+        }
+      }
+
+      .subBtn {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+
+        button {
+          width: 50%;
+          height: 40px;
+          border: none;
+          border-radius: 5px;
+          color: $text-color;
+          font-size: 16px;
+          background-color: $primary;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #ffffff;
+            border: 1.7px solid $primary;
+          }
+        }
       }
     }
+
     .login {
       display: flex;
       gap: 5px;
-      justify-content: start;
+      justify-content: center;
       margin-top: 10px;
       margin-bottom: 10px;
+
       a {
         text-decoration: none;
-        color: #56d9d9;
+        color: $primary;
+
         &:hover {
           color: #3cb9b9;
         }
       }
     }
+
     small {
       color: red;
     }
   }
-
-  animation: login 2s ease-in-out;
-  position: relative;
 }
 
+// Animation
 @keyframes login {
   from {
     transform: scale(0.4);
