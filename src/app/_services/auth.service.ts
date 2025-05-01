@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of, throwError } from 'rxjs';
-
-import { IUser } from '../_interfaces/IUSer';
+import { IUser } from '../_interfaces/IUser';
 
 @Injectable({
   providedIn: 'root',
