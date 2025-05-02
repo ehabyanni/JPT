@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('password');
   }
   get ADDRESS() {
-    return this.registerForm.get('Address');
+    return this.registerForm.get('address');
   }
   get PHONE() {
     return this.registerForm.get('phone_number');
@@ -52,12 +52,22 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    let emaillogin = this.EMAIL?.value;
-    let passlogin = this.PASSWORD?.value;
+    let username = this.NAME?.value;
+    let email = this.EMAIL?.value;
+    let password = this.PASSWORD?.value;
+    let address = this.ADDRESS?.value;
+    let phone_number = this.PHONE?.value;
+    let birthdate = this.BIRTHDATE?.value;
 
     if (this.registerForm.valid) {
-      console.log(emaillogin, passlogin);
-      this.auth.Register(emaillogin, passlogin).subscribe(
+      this.auth.Register({
+        name: username,
+        email: email,
+        password: password,
+        address: address,
+        phone_number: phone_number,
+        date_of_birth: birthdate,
+      }).subscribe(
         (response) => {
           // Success handler
           console.log(response.message);

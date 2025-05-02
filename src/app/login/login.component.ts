@@ -39,11 +39,11 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    let emailLogin = this.EMAIL?.value;
-    let passLogin = this.PASSWORD?.value;
+    let email = this.EMAIL?.value;
+    let password = this.PASSWORD?.value;
 
     if (this.loginForm.valid) {
-      this.auth.login(emailLogin, passLogin).subscribe(
+      this.auth.login(email, password).subscribe(
         (response) => {
           console.log(response.message);
           this.isLoggedIn = true;

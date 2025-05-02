@@ -8,14 +8,14 @@ import { IUser } from '../_interfaces/IUser';
 export class AuthService {
   constructor() {}
 
-  public Register(email: string, password: string): Observable<any> {
+  public Register(userData : IUser): Observable<any> {
     let usersRegistered = JSON.parse(
       localStorage.getItem('usersRegistered') || '[]'
     );
 
     // Check if user already exists
     const userExists = usersRegistered.find(
-      (user: IUser) => user.email === email
+      (user: IUser) => user.email === userData.email
     );
 
     if (userExists) {
@@ -25,13 +25,13 @@ export class AuthService {
     }
 
     // Register new user
-    const newUser = { email, password };
+    const newUser = userData;
     usersRegistered.push(newUser);
     localStorage.setItem('usersRegistered', JSON.stringify(usersRegistered));
 
     return of({
       message: 'Registration successful.',
-      user: { email },
+      user: userData,
     }).pipe(delay(1000));
   }
 
