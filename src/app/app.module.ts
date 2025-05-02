@@ -7,6 +7,8 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { NgxsModule } from '@ngxs/store';
+import { AuthState } from './store/auth/auth.state';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { RegisterComponent } from './register/register.component';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxsModule.forRoot([AuthState])
   ],
   providers: [],
   bootstrap: [AppComponent]

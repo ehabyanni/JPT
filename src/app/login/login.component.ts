@@ -10,16 +10,17 @@ import { AuthService } from '../_services/auth.service';
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnInit {
+  isLoggedIn: boolean = false;
+  isLoginFailed: boolean = false;
+  errorMessage: string = '';
+  loginForm: any;
+  
   constructor(
     private formbuilder: FormBuilder,
     private auth: AuthService,
     private router: Router
   ) {}
 
-  isLoggedIn: boolean = false;
-  isLoginFailed: boolean = false;
-  errorMessage: string = '';
-  loginForm: any;
 
   ngOnInit(): void {
     this.loginForm = this.formbuilder.group({
