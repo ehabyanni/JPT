@@ -81,6 +81,9 @@ export class RegisterComponent implements OnInit {
           console.error(this.registrationError);
         }
       );
+    } else{
+      this.isRegistered = false;
+      this.registrationError = 'Invalid form';
     }
   }
 }
