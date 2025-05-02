@@ -39,6 +39,10 @@ export class AuthService {
     const usersRegistered = JSON.parse(
       localStorage.getItem('usersRegistered') || '[]'
     );
+    
+    const usersLogged = JSON.parse(
+      localStorage.getItem('usersLogged') || '[]'
+    );
 
     const matchedUser = usersRegistered.find(
       (user: IUser) =>
@@ -46,6 +50,8 @@ export class AuthService {
     );
 
     if (matchedUser) {
+      usersLogged.push({ matchedUser , time: new Date() });
+      localStorage.setItem('usersLogged', JSON.stringify(usersLogged));
       return of({
         message: 'Login successful',
         user: { email },
