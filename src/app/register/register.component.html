@@ -5,7 +5,7 @@
       <form
         [formGroup]="registerForm"
         method="post"
-        (ngSubmit)="onSubmit()"
+        (ngSubmit)="onSubmit({ name: NAME.value, email: EMAIL.value, password: PASSWORD.value, address: ADDRESS.value, phone_number: PHONE.value, date_of_birth: BIRTHDATE.value })"
         id="formID"
         class="formDiv"
       >

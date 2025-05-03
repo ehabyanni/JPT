@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../_services/auth.service';
+import { Store } from '@ngxs/store';
+import { AuthState, Login } from '../store/auth/auth.state';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -10,18 +12,26 @@ import { AuthService } from '../_services/auth.service';
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnInit {
-  constructor(
-    private formbuilder: FormBuilder,
-    private auth: AuthService,
-    private router: Router
-  ) {}
-
   isLoggedIn: boolean = false;
   isLoginFailed: boolean = false;
   errorMessage: string = '';
   loginForm: any;
+  
+  constructor(
+    private formbuilder: FormBuilder,
+    // private auth: AuthService,
+    private router: Router,
+    private store: Store,
+    private toastr: ToastrService
+  ) {}
+
 
   ngOnInit(): void {
+    const isLoggedIn = !!this.store.selectSnapshot(AuthState.currentUser);    
+    if (isLoggedIn) {
+      this.router.navigate(['/dashboard']);
+    }
+    
     this.loginForm = this.formbuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -38,23 +48,19 @@ export class LoginComponent implements OnInit {
     return this.loginForm.get('password');
   }
 
-  onSubmit() {
-    let email = this.EMAIL?.value;
-    let password = this.PASSWORD?.value;
-
-    if (this.loginForm.valid) {
-      this.auth.login(email, password).subscribe(
-        (response) => {
-          console.log(response.message);
-          this.isLoggedIn = true;
-          this.errorMessage = '';
-          // this.router.navigate(['/home']); // or any route you want
+  onSubmit(email: string, password: string) {
+    this.store.dispatch(new Login({ email, password }))
+      .subscribe({
+        next: () => {
+          this.toastr.success('Login successful.');
+          this.router.navigate(['/dashboard']);
         },
-        (error) => {
-          this.isLoggedIn = false;
-          this.errorMessage = error.error.message || 'Login failed';
+        error: (err) => {
+          this.toastr.error(err.message);
+          setTimeout(() => {
+            err.message === 'User already logged in' ? this.router.navigate(['/dashboard']) : '';
+          }, 1000)
         }
-      );
-    }
+      });
   }
 }

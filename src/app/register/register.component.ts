@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../_services/auth.service';
+import { Store } from '@ngxs/store';
+import { IUser } from '../_interfaces/IUser';
+import { Register } from '../store/auth/auth.state';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -12,12 +15,12 @@ import { AuthService } from '../_services/auth.service';
 export class RegisterComponent implements OnInit {
   constructor(
     private formbuilder: FormBuilder,
-    private auth: AuthService,
-    private router: Router
+    // private auth: AuthService,
+    private router: Router,
+    private store: Store,
+    private toastr: ToastrService
   ) {}
 
-  isRegistered: boolean = false;
-  isRegisterFailed: boolean = false;
   registrationError: string = '';
   registerForm: any;
 
@@ -51,39 +54,15 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('birthdate');
   }
 
-  onSubmit() {
-    let username = this.NAME?.value;
-    let email = this.EMAIL?.value;
-    let password = this.PASSWORD?.value;
-    let address = this.ADDRESS?.value;
-    let phone_number = this.PHONE?.value;
-    let birthdate = this.BIRTHDATE?.value;
-
-    if (this.registerForm.valid) {
-      this.auth.Register({
-        name: username,
-        email: email,
-        password: password,
-        address: address,
-        phone_number: phone_number,
-        date_of_birth: birthdate,
-      }).subscribe(
-        (response) => {
-          // Success handler
-          console.log(response.message);
-          this.isRegistered = true;
-          this.registrationError = '';
-        },
-        (error) => {
-          // Error handler
-          this.isRegistered = false;
-          this.registrationError = error.error.message || 'Registration failed';
-          console.error(this.registrationError);
-        }
-      );
-    } else{
-      this.isRegistered = false;
-      this.registrationError = 'Invalid form';
-    }
+  onSubmit(userData: IUser) {
+    this.store.dispatch(new Register(userData)).subscribe({
+      next: () => {
+        this.toastr.success('Registration successful.');
+        this.router.navigate(['/login']);
+      },
+      error: (err: any) => {
+        this.toastr.error(err.message);
+      },
+    });
   }
 }

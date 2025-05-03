@@ -1,43 +1,63 @@
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngxs/store';
 import { IUser } from '../_interfaces/IUser';
-
-// export interface PeriodicElement {
-//   name: string;
-//   position: number;
-//   weight: number;
-//   symbol: string;
-// }
-
-// const ELEMENT_DATA: PeriodicElement[] = [
-//   {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-//   {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-//   {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-//   {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-//   {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-//   {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-//   {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-//   {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-//   {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-//   {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-// ];
+import { AuthState, DeleteUser, Logout } from '../store/auth/auth.state';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: false,
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrls: ['./dashboard.component.scss']
 })
-
-
 export class DashboardComponent implements OnInit {
-  
-  displayedColumns: string[] = [];
-  dataSource: IUser[] = [];
-  
-  ngOnInit(): void {
-    this.displayedColumns = ['name', 'email', 'address', 'phone_number', 'date_of_birth'];
-    this.dataSource = JSON.parse(localStorage.getItem('usersRegistered') || '[]');
+  // Registered Users Grid
+  registeredUsers: IUser[] = [];
+  registeredColumns: string[] = ['name', 'email', 'address', 'phone', 'birthdate', 'actions'];
+
+  // Login Attempts Grid
+  loginRecords: Array<{ user: IUser; loginTime: string }> = [];
+  loginColumns: string[] = ['email', 'loginTime'];
+
+  constructor(private store: Store, private router: Router, private toastr: ToastrService) {}
+
+  ngOnInit() {
+    // Subscribe to registered users
+    this.store.select(AuthState.usersRegistered).subscribe((users: IUser[]) => {
+      this.registeredUsers = users || [];
+      console.log('Registered users updated:', this.registeredUsers);
+    });
+
+    // Subscribe to login records
+    this.store.select(AuthState.usersLogged).subscribe((records: Array<{ user: IUser; loginTime: string }>) => {
+      this.loginRecords = records || [];
+      console.log('Login records updated:', this.loginRecords);
+    });
   }
 
+  formatLoginTime(isoString: string): string {
+    return new Date(isoString).toLocaleString();
+  }
 
+  deleteUser(email: string): void {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.store.dispatch(new DeleteUser(email)).subscribe({
+        next: () => this.toastr.success('User deleted successfully.'),
+        error: (err) => this.toastr.error(err.message),
+      });
+    }
+  }
+
+  onLogout() {
+    this.store.dispatch(new Logout()).subscribe({
+      next: () => {
+        this.toastr.success('Logged out successfully');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        this.toastr.error('Logout failed');
+      }
+    });
+  }
 }
