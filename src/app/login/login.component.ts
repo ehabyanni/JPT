@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../_services/auth.service';
+import { Store } from '@ngxs/store';
+import { Login } from '../store/auth/auth.state';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +18,9 @@ export class LoginComponent implements OnInit {
   
   constructor(
     private formbuilder: FormBuilder,
-    private auth: AuthService,
-    private router: Router
+    // private auth: AuthService,
+    private router: Router,
+    private store: Store
   ) {}
 
 
@@ -39,23 +41,37 @@ export class LoginComponent implements OnInit {
     return this.loginForm.get('password');
   }
 
-  onSubmit() {
-    let email = this.EMAIL?.value;
-    let password = this.PASSWORD?.value;
-
-    if (this.loginForm.valid) {
-      this.auth.login(email, password).subscribe(
-        (response) => {
-          console.log(response.message);
-          this.isLoggedIn = true;
-          this.errorMessage = '';
-          // this.router.navigate(['/home']); // or any route you want
+  onSubmit(email: string, password: string) {
+    this.store.dispatch(new Login({ email, password }))
+      .subscribe({
+        next: () => {
+          // Login successful
+          console.log('Login complete');
         },
-        (error) => {
-          this.isLoggedIn = false;
-          this.errorMessage = error.error.message || 'Login failed';
+        error: (err) => {
+          // Handle error
+          console.error('Login failed', err);
         }
-      );
-    }
+      });
   }
+  
+  // onSubmit() {
+  //   let email = this.EMAIL?.value;
+  //   let password = this.PASSWORD?.value;
+
+  //   if (this.loginForm.valid) {
+  //     this.auth.login(email, password).subscribe(
+  //       (response) => {
+  //         console.log(response.message);
+  //         this.isLoggedIn = true;
+  //         this.errorMessage = '';
+  //         // this.router.navigate(['/home']); // or any route you want
+  //       },
+  //       (error) => {
+  //         this.isLoggedIn = false;
+  //         this.errorMessage = error.error.message || 'Login failed';
+  //       }
+  //     );
+  //   }
+  // }
 }

@@ -8,7 +8,7 @@
       <form
         [formGroup]="loginForm"
         method="post"
-        (ngSubmit)="onSubmit()"
+        (ngSubmit)="onSubmit(EMAIL.value, PASSWORD.value)"
         id="formID"
       >
         <div class="usernameLogin">
