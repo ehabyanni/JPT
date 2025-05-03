@@ -1,4 +1,4 @@
-import { State, Action, StateContext } from '@ngxs/store';
+import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { IUser } from '../../_interfaces/IUser';
 import { Injectable } from '@angular/core';
 
@@ -40,6 +40,12 @@ interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
+
+  @Selector()
+  static usersRegistered(state: AuthStateModel): IUser[] {
+    return state.usersRegistered;
+  }
+  
   @Action(Register)
   register(ctx: StateContext<AuthStateModel>, action: Register) {
     ctx.patchState({ loading: true, error: null });

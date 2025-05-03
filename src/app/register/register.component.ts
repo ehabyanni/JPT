@@ -58,6 +58,7 @@ export class RegisterComponent implements OnInit {
     this.store.dispatch(new Register(userData)).subscribe({
       next: () => {
         this.toastr.success('Registration successful.');
+        this.router.navigate(['/login']);
       },
       error: (err: any) => {
         this.toastr.error(err.message);
