@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Login } from '../store/auth/auth.state';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
     private formbuilder: FormBuilder,
     // private auth: AuthService,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private toastr: ToastrService
   ) {}
 
 
@@ -45,33 +47,11 @@ export class LoginComponent implements OnInit {
     this.store.dispatch(new Login({ email, password }))
       .subscribe({
         next: () => {
-          // Login successful
-          console.log('Login complete');
+          this.toastr.success('Login successful.');
         },
         error: (err) => {
-          // Handle error
-          console.error('Login failed', err);
+          this.toastr.error(err.message);
         }
       });
   }
-  
-  // onSubmit() {
-  //   let email = this.EMAIL?.value;
-  //   let password = this.PASSWORD?.value;
-
-  //   if (this.loginForm.valid) {
-  //     this.auth.login(email, password).subscribe(
-  //       (response) => {
-  //         console.log(response.message);
-  //         this.isLoggedIn = true;
-  //         this.errorMessage = '';
-  //         // this.router.navigate(['/home']); // or any route you want
-  //       },
-  //       (error) => {
-  //         this.isLoggedIn = false;
-  //         this.errorMessage = error.error.message || 'Login failed';
-  //       }
-  //     );
-  //   }
-  // }
 }

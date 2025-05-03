@@ -40,15 +40,6 @@ interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
-  // Initialize from localStorage
-  @Action({ type: '@@INIT' })
-  // init(ctx: StateContext<AuthStateModel>) {
-  //   const usersRegistered = JSON.parse(
-  //     localStorage.getItem('usersRegistered') || '[]'
-  //   );
-  //   const usersLogged = JSON.parse(localStorage.getItem('usersLogged') || '[]');
-  //   ctx.patchState({ usersRegistered, usersLogged });
-  // }
   @Action(Register)
   register(ctx: StateContext<AuthStateModel>, action: Register) {
     ctx.patchState({ loading: true, error: null });
@@ -68,14 +59,8 @@ export class AuthState {
         (u) => u.email === action.payload.email
       );
 
-      console.log(userExists);
-
       if (userExists) {
-        ctx.patchState({
-          error: 'Email already registered',
-          loading: false,
-        });
-        return;
+        throw new Error('User already exists');
       }
 
       const updatedUsers = [...state.usersRegistered, action.payload];
@@ -90,46 +75,42 @@ export class AuthState {
   async login(ctx: StateContext<AuthStateModel>, action: Login) {
     ctx.patchState({ loading: true, error: null });
 
-    try {
-      const state = ctx.getState();
+    const state = ctx.getState();
 
-      // 1. Check if user exists in registered users
-      const user = state.usersRegistered.find(
-        (u) =>
-          u.email === action.payload.email &&
-          u.password === action.payload.password
-      );
+    // 1. Check if user exists in registered users
+    const user = state.usersRegistered.find(
+      (u) =>
+        u.email === action.payload.email &&
+        u.password === action.payload.password
+    );
 
-      if (!user) {
-        throw new Error('Invalid credentials');
-      }
-
-      // 2. Check if already logged in (optional)
-      const isAlreadyLogged = state.usersLogged.some(
-        (entry) => entry.user.email === user.email
-      );
-
-      // 3. Add to logged users
-      const loginEntry = {
-        user,
-        loginTime: new Date().toISOString(),
-      };
-
-      const updatedLoggedUsers = [...state.usersLogged, loginEntry];
-
-      // Update both state and localStorage
-      ctx.patchState({
-        currentUser: user,
-        usersLogged: updatedLoggedUsers,
-        loading: false,
-      });
-      localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
-    } catch (error: any) {
-      ctx.patchState({
-        error: error.message,
-        loading: false,
-      });
+    if (!user) {
+      throw new Error('Invalid credentials');
     }
+
+    // 2. Check if already logged in (optional)
+    const isAlreadyLogged = state.usersLogged.some(
+      (entry) => entry.user.email === user.email
+    );
+
+    if (isAlreadyLogged) {
+      throw new Error('User already logged in');
+    }
+
+    // 3. Add to logged users
+    const loginEntry = {
+      user,
+      loginTime: new Date().toISOString(),
+    };
+
+    const updatedLoggedUsers = [...state.usersLogged, loginEntry];
+
+    // Update both state and localStorage
+    ctx.patchState({
+      currentUser: user,
+      usersLogged: updatedLoggedUsers,
+      loading: false,
+    });
   }
 
   @Action(Logout)
