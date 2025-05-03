@@ -42,39 +42,48 @@ interface AuthStateModel {
 export class AuthState {
   // Initialize from localStorage
   @Action({ type: '@@INIT' })
-  init(ctx: StateContext<AuthStateModel>) {
-    const usersRegistered = JSON.parse(
-      localStorage.getItem('usersRegistered') || '[]'
-    );
-    const usersLogged = JSON.parse(localStorage.getItem('usersLogged') || '[]');
-    ctx.patchState({ usersRegistered, usersLogged });
-  }
-
+  // init(ctx: StateContext<AuthStateModel>) {
+  //   const usersRegistered = JSON.parse(
+  //     localStorage.getItem('usersRegistered') || '[]'
+  //   );
+  //   const usersLogged = JSON.parse(localStorage.getItem('usersLogged') || '[]');
+  //   ctx.patchState({ usersRegistered, usersLogged });
+  // }
   @Action(Register)
   register(ctx: StateContext<AuthStateModel>, action: Register) {
     ctx.patchState({ loading: true, error: null });
 
     const state = ctx.getState();
-    const userExists = state.usersRegistered.some(
-      (u) => u.email === action.payload.email
-    );
-
-    console.log(userExists);
-
-    if (userExists) {
+    if (
+      state.usersRegistered.length === 1 &&
+      state.usersRegistered[0] === undefined
+    ) {
+      const updatedUsers = [action.payload];
       ctx.patchState({
-        error: 'Email already registered',
+        usersRegistered: updatedUsers,
         loading: false,
       });
-      return;
-    }
+    } else {
+      const userExists = state.usersRegistered.some(
+        (u) => u.email === action.payload.email
+      );
 
-    const updatedUsers = [...state.usersRegistered, action.payload];
-    ctx.patchState({
-      usersRegistered: updatedUsers,
-      loading: false,
-    });
-    localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
+      console.log(userExists);
+
+      if (userExists) {
+        ctx.patchState({
+          error: 'Email already registered',
+          loading: false,
+        });
+        return;
+      }
+
+      const updatedUsers = [...state.usersRegistered, action.payload];
+      ctx.patchState({
+        usersRegistered: updatedUsers,
+        loading: false,
+      });
+    }
   }
 
   @Action(Login)
