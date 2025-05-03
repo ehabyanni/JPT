@@ -7,13 +7,18 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
+import { NgxsLoggerPluginModule, NgxsLoggerPluginOptions } from '@ngxs/logger-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsModule } from '@ngxs/store';
 import { AuthState } from './store/auth/auth.state';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { MatTableModule } from '@angular/material/table';
+import {MatIconModule} from '@angular/material/icon';
+
+interface CustomNgxsLoggerPluginOptions extends NgxsLoggerPluginOptions {
+  key: string[];
+}
 
 @NgModule({
   declarations: [
@@ -30,9 +35,13 @@ import { MatTableModule } from '@angular/material/table';
     NgxsModule.forRoot([AuthState]),
     NgxsLoggerPluginModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
+    NgxsLoggerPluginModule.forRoot({
+      key: ['auth.usersRegistered', 'auth.usersLogged', 'auth.currentUser']
+    } as CustomNgxsLoggerPluginOptions),
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    MatTableModule
+    MatTableModule,
+    MatIconModule 
   ],
   providers: [],
   bootstrap: [AppComponent]

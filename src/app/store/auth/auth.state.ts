@@ -17,6 +17,10 @@ export class Logout {
   static readonly type = '[Auth] Logout';
 }
 
+export class LoadFromStorage {
+  static readonly type = '[Auth] Load From Storage';
+}
+
 interface AuthStateModel {
   usersRegistered: IUser[];
   usersLogged: Array<{
@@ -40,10 +44,31 @@ interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
+   ngxsOnInit(ctx: StateContext<AuthStateModel>) {
+    const storedUsers = localStorage.getItem('usersRegistered');
+    const storedLogins = localStorage.getItem('usersLogged');
+    
+    if (storedUsers) {
+      ctx.patchState({
+        usersRegistered: JSON.parse(storedUsers)
+      });
+    }
+    
+    if (storedLogins) {
+      ctx.patchState({
+        usersLogged: JSON.parse(storedLogins)
+      });
+    }
+  }
 
   @Selector()
   static usersRegistered(state: AuthStateModel): IUser[] {
     return state.usersRegistered;
+  }
+
+  @Selector()
+  static usersLogged(state: AuthStateModel): Array<{ user: IUser; loginTime: string }> {
+    return state.usersLogged;
   }
   
   @Action(Register)
@@ -74,6 +99,7 @@ export class AuthState {
         usersRegistered: updatedUsers,
         loading: false,
       });
+      localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
     }
   }
 
@@ -117,6 +143,7 @@ export class AuthState {
       usersLogged: updatedLoggedUsers,
       loading: false,
     });
+    localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
   @Action(Logout)
