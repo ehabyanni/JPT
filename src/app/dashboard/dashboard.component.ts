@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { IUser } from '../_interfaces/IUser';
-import { AuthState } from '../store/auth/auth.state';
+import { AuthState, DeleteUser, Logout } from '../store/auth/auth.state';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,13 +14,13 @@ import { AuthState } from '../store/auth/auth.state';
 export class DashboardComponent implements OnInit {
   // Registered Users Grid
   registeredUsers: IUser[] = [];
-  registeredColumns: string[] = ['name', 'email', 'address', 'phone', 'birthdate'];
+  registeredColumns: string[] = ['name', 'email', 'address', 'phone', 'birthdate', 'actions'];
 
   // Login Attempts Grid
   loginRecords: Array<{ user: IUser; loginTime: string }> = [];
   loginColumns: string[] = ['email', 'loginTime'];
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit() {
     // Subscribe to registered users
@@ -36,5 +38,26 @@ export class DashboardComponent implements OnInit {
 
   formatLoginTime(isoString: string): string {
     return new Date(isoString).toLocaleString();
+  }
+
+  deleteUser(email: string): void {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.store.dispatch(new DeleteUser(email)).subscribe({
+        next: () => this.toastr.success('User deleted successfully.'),
+        error: (err) => this.toastr.error(err.message),
+      });
+    }
+  }
+
+  onLogout() {
+    this.store.dispatch(new Logout()).subscribe({
+      next: () => {
+        this.toastr.success('Logged out successfully');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        this.toastr.error('Logout failed');
+      }
+    });
   }
 }

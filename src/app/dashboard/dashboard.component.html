@@ -1,42 +1,66 @@
 <div class="dashboard-container">
   <!-- Registered Users Grid -->
   <section class="grid-section">
-    <h2>Registered Users</h2>
-    
+    <div class="header">
+      <h2>Registered Users</h2>
+      <button mat-button style="background-color: transparent; border: none;" (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+
     <div *ngIf="registeredUsers.length > 0; else noUsers">
       <table mat-table [dataSource]="registeredUsers" class="mat-elevation-z8">
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Name </th>
-          <td mat-cell *matCellDef="let user"> {{ user.name }} </td>
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let user">{{ user.name }}</td>
         </ng-container>
 
         <!-- Email Column -->
         <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef> Email </th>
-          <td mat-cell *matCellDef="let user"> {{ user.email }} </td>
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let user">{{ user.email }}</td>
         </ng-container>
 
         <!-- Address Column -->
         <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef> Address </th>
-          <td mat-cell *matCellDef="let user"> {{ user.address || '-' }} </td>
+          <th mat-header-cell *matHeaderCellDef>Address</th>
+          <td mat-cell *matCellDef="let user">{{ user.address || "-" }}</td>
         </ng-container>
 
         <!-- Phone Column -->
         <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef> Phone </th>
-          <td mat-cell *matCellDef="let user"> {{ user.phone_number || '-' }} </td>
+          <th mat-header-cell *matHeaderCellDef>Phone</th>
+          <td mat-cell *matCellDef="let user">
+            {{ user.phone_number || "-" }}
+          </td>
         </ng-container>
 
         <!-- Birthdate Column -->
         <ng-container matColumnDef="birthdate">
-          <th mat-header-cell *matHeaderCellDef> Birthdate </th>
-          <td mat-cell *matCellDef="let user"> {{ user.date_of_birth || '-' }} </td>
+          <th mat-header-cell *matHeaderCellDef>Birthdate</th>
+          <td mat-cell *matCellDef="let user">
+            {{ user.date_of_birth || "-" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let user">
+            <button
+              mat-icon-button
+              style="background-color: transparent; border: none"
+              color="warn"
+              (click)="deleteUser(user.email)"
+              matTooltip="Delete user"
+            >
+              <mat-icon color="warn">delete</mat-icon>
+            </button>
+          </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="registeredColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: registeredColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: registeredColumns"></tr>
       </table>
     </div>
   </section>
@@ -44,23 +68,25 @@
   <!-- Login Attempts Grid -->
   <section class="grid-section">
     <h2>Login History</h2>
-    
+
     <div *ngIf="loginRecords.length > 0; else noLogins">
       <table mat-table [dataSource]="loginRecords" class="mat-elevation-z8">
         <!-- Email Column -->
         <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef> Email </th>
-          <td mat-cell *matCellDef="let record"> {{ record.user.email }} </td>
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let record">{{ record.user.email }}</td>
         </ng-container>
 
         <!-- Login Time Column -->
         <ng-container matColumnDef="loginTime">
-          <th mat-header-cell *matHeaderCellDef> Login Time </th>
-          <td mat-cell *matCellDef="let record"> {{ formatLoginTime(record.loginTime) }} </td>
+          <th mat-header-cell *matHeaderCellDef>Login Time</th>
+          <td mat-cell *matCellDef="let record">
+            {{ formatLoginTime(record.loginTime) }}
+          </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="loginColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: loginColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: loginColumns"></tr>
       </table>
     </div>
   </section>

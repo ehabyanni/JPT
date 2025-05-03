@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { Login } from '../store/auth/auth.state';
+import { AuthState, Login } from '../store/auth/auth.state';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -27,6 +27,11 @@ export class LoginComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const isLoggedIn = !!this.store.selectSnapshot(AuthState.currentUser);    
+    if (isLoggedIn) {
+      this.router.navigate(['/dashboard']);
+    }
+    
     this.loginForm = this.formbuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -52,6 +57,9 @@ export class LoginComponent implements OnInit {
         },
         error: (err) => {
           this.toastr.error(err.message);
+          setTimeout(() => {
+            err.message === 'User already logged in' ? this.router.navigate(['/dashboard']) : '';
+          }, 1000)
         }
       });
   }

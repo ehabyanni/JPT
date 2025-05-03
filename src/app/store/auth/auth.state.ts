@@ -17,11 +17,16 @@ export class Logout {
   static readonly type = '[Auth] Logout';
 }
 
+export class DeleteUser {
+  static readonly type = '[Auth] Delete User';
+  constructor(public payload: string) {} // payload will be user email
+}
+
 export class LoadFromStorage {
   static readonly type = '[Auth] Load From Storage';
 }
 
-interface AuthStateModel {
+export interface AuthStateModel {
   usersRegistered: IUser[];
   usersLogged: Array<{
     user: IUser;
@@ -44,19 +49,19 @@ interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
-   ngxsOnInit(ctx: StateContext<AuthStateModel>) {
+  ngxsOnInit(ctx: StateContext<AuthStateModel>) {
     const storedUsers = localStorage.getItem('usersRegistered');
     const storedLogins = localStorage.getItem('usersLogged');
-    
+
     if (storedUsers) {
       ctx.patchState({
-        usersRegistered: JSON.parse(storedUsers)
+        usersRegistered: JSON.parse(storedUsers),
       });
     }
-    
+
     if (storedLogins) {
       ctx.patchState({
-        usersLogged: JSON.parse(storedLogins)
+        usersLogged: JSON.parse(storedLogins),
       });
     }
   }
@@ -67,10 +72,17 @@ export class AuthState {
   }
 
   @Selector()
-  static usersLogged(state: AuthStateModel): Array<{ user: IUser; loginTime: string }> {
+  static usersLogged(
+    state: AuthStateModel
+  ): Array<{ user: IUser; loginTime: string }> {
     return state.usersLogged;
   }
-  
+
+  @Selector()
+  static currentUser(state: AuthStateModel): IUser | null {
+    return state.currentUser;
+  }
+
   @Action(Register)
   register(ctx: StateContext<AuthStateModel>, action: Register) {
     ctx.patchState({ loading: true, error: null });
@@ -107,7 +119,12 @@ export class AuthState {
   async login(ctx: StateContext<AuthStateModel>, action: Login) {
     ctx.patchState({ loading: true, error: null });
 
+    const { email, password } = action.payload;
     const state = ctx.getState();
+
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
 
     // 1. Check if user exists in registered users
     const user = state.usersRegistered.find(
@@ -148,8 +165,38 @@ export class AuthState {
 
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>) {
+    const currentUser = ctx.getState().currentUser;
+    let updatedLoggedUsers = [...ctx.getState().usersLogged];
+    
+    // Remove current user from logged users if exists
+    if (currentUser) {
+      updatedLoggedUsers = updatedLoggedUsers.filter(
+        entry => entry.user.email !== currentUser.email
+      );
+    }
+  
+    // Update state and storage
     ctx.patchState({
       currentUser: null,
+      usersLogged: updatedLoggedUsers
     });
+    
+    localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
+  }
+
+  @Action(DeleteUser)
+  deleteUser(ctx: StateContext<AuthStateModel>, action: DeleteUser) {
+    const state = ctx.getState();
+
+    // Filter out the user to delete
+    const updatedUsers = state.usersRegistered.filter(
+      (user) => user.email !== action.payload
+    );
+
+    // Update state and localStorage
+    ctx.patchState({
+      usersRegistered: updatedUsers,
+    });
+    localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
   }
 }

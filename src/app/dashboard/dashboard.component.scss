@@ -3,11 +3,17 @@
   
   .grid-section {
     margin-bottom: 40px;
-    
-    h2 {
-      margin-bottom: 16px;
-      color: #3f51b5;
+
+    .header{
+      display: flex;
+      justify-content: space-between;
+      justify-items: center;
+      h2 {
+        margin-bottom: 16px;
+        color: #3f51b5;
+      }
     }
+    
   }
 
   table {
