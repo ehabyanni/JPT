@@ -136,7 +136,7 @@ export class AuthState {
 
     const updatedLoggedUsers = [...state.usersLogged, loginEntry];
 
-    // Update both state and localStorage
+    // Update both state
     ctx.patchState({
       currentUser: loginEntry.user,
       usersLogged: updatedLoggedUsers,
@@ -176,7 +176,7 @@ export class AuthState {
       (user) => user.email !== action.payload
     );
 
-    // Update state and localStorage
+    // Update state
     ctx.patchState({
       usersRegistered: updatedUsers,
     });
