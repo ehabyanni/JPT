@@ -156,10 +156,11 @@ export class AuthState {
 
     // Update both state and localStorage
     ctx.patchState({
-      currentUser: user,
+      currentUser: loginEntry.user,
       usersLogged: updatedLoggedUsers,
       loading: false,
     });
+
     localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
@@ -168,19 +169,23 @@ export class AuthState {
     const currentUser = ctx.getState().currentUser;
     let updatedLoggedUsers = [...ctx.getState().usersLogged];
     
+    if (!currentUser) {
+      throw new Error('No user is currently logged in.');
+    }
+
     // Remove current user from logged users if exists
     if (currentUser) {
       updatedLoggedUsers = updatedLoggedUsers.filter(
-        entry => entry.user.email !== currentUser.email
+        (entry) => entry.user.email !== currentUser.email
       );
     }
-  
+
     // Update state and storage
     ctx.patchState({
       currentUser: null,
-      usersLogged: updatedLoggedUsers
+      usersLogged: updatedLoggedUsers,
     });
-    
+
     localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
