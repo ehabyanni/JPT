@@ -4,7 +4,7 @@
     <div class="header">
       <h2>Registered Users</h2>
       <button mat-button style="background-color: transparent; border: none;" (click)="onLogout()">
-        <mat-icon>logout</mat-icon>
+        <mat-icon class="mat-logout">logout</mat-icon>
       </button>
     </div>
 
@@ -54,7 +54,7 @@
               (click)="deleteUser(user.email)"
               matTooltip="Delete user"
             >
-              <mat-icon color="warn">delete</mat-icon>
+              <mat-icon class="mat-delete">delete</mat-icon>
             </button>
           </td>
         </ng-container>
