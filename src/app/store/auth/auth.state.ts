@@ -118,7 +118,7 @@ export class AuthState {
 
     // 2. Check if already logged in (optional)
     const isAlreadyLogged = state.usersLogged.some(
-      (entry) => entry.user.email === user.email
+      (entry) => entry.loggedIn === true
     );
 
     if (isAlreadyLogged) {
