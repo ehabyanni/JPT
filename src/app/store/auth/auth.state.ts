@@ -22,15 +22,12 @@ export class DeleteUser {
   constructor(public payload: string) {} // payload will be user email
 }
 
-export class LoadFromStorage {
-  static readonly type = '[Auth] Load From Storage';
-}
-
 export interface AuthStateModel {
   usersRegistered: IUser[];
   usersLogged: Array<{
     user: IUser;
     loginTime: string;
+    loggedIn: boolean;
   }>;
   currentUser: IUser | null;
   loading: boolean;
@@ -49,23 +46,6 @@ export interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
-  ngxsOnInit(ctx: StateContext<AuthStateModel>) {
-    const storedUsers = localStorage.getItem('usersRegistered');
-    const storedLogins = localStorage.getItem('usersLogged');
-
-    if (storedUsers) {
-      ctx.patchState({
-        usersRegistered: JSON.parse(storedUsers),
-      });
-    }
-
-    if (storedLogins) {
-      ctx.patchState({
-        usersLogged: JSON.parse(storedLogins),
-      });
-    }
-  }
-
   @Selector()
   static usersRegistered(state: AuthStateModel): IUser[] {
     return state.usersRegistered;
@@ -74,7 +54,7 @@ export class AuthState {
   @Selector()
   static usersLogged(
     state: AuthStateModel
-  ): Array<{ user: IUser; loginTime: string }> {
+  ): Array<{ user: IUser; loginTime: string; loggedIn: boolean }> {
     return state.usersLogged;
   }
 
@@ -111,7 +91,6 @@ export class AuthState {
         usersRegistered: updatedUsers,
         loading: false,
       });
-      localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
     }
   }
 
@@ -139,7 +118,7 @@ export class AuthState {
 
     // 2. Check if already logged in (optional)
     const isAlreadyLogged = state.usersLogged.some(
-      (entry) => entry.user.email === user.email
+      (entry) => entry.loggedIn === true
     );
 
     if (isAlreadyLogged) {
@@ -150,58 +129,71 @@ export class AuthState {
     const loginEntry = {
       user,
       loginTime: new Date().toISOString(),
+      loggedIn: true,
     };
 
     const updatedLoggedUsers = [...state.usersLogged, loginEntry];
 
-    // Update both state and localStorage
+    // Update both state
     ctx.patchState({
       currentUser: loginEntry.user,
       usersLogged: updatedLoggedUsers,
       loading: false,
     });
-
-    localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>) {
     const currentUser = ctx.getState().currentUser;
-    let updatedLoggedUsers = [...ctx.getState().usersLogged];
-    
+    let usersLogged = [...ctx.getState().usersLogged];
+
     if (!currentUser) {
       throw new Error('No user is currently logged in.');
     }
 
-    // Remove current user from logged users if exists
-    if (currentUser) {
-      updatedLoggedUsers = updatedLoggedUsers.filter(
-        (entry) => entry.user.email !== currentUser.email
-      );
-    }
+    // Update the loggedIn flag to false for the current user
+    const updatedLoggedUsers = usersLogged.map((entry) => {
+      if (entry.user.email === currentUser.email) {
+        return {
+          ...entry,
+          loggedIn: false, // update loggedIn flag instead of removing
+        };
+      }
+      return entry;
+    });
 
     // Update state and storage
     ctx.patchState({
       currentUser: null,
       usersLogged: updatedLoggedUsers,
     });
-
-    localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
   @Action(DeleteUser)
   deleteUser(ctx: StateContext<AuthStateModel>, action: DeleteUser) {
     const state = ctx.getState();
+    const emailToDelete = action.payload;
+
+    // Check if the user is currently logged in (in usersLogged array)
+    const isLoggedIn = state.usersLogged.some(
+      (entry) => entry.user.email === emailToDelete && entry.loggedIn
+    );
+
+    // Check if the user is the currentUser
+    const isCurrentUser = state.currentUser?.email === emailToDelete;
+
+    if (isLoggedIn || isCurrentUser) {
+      throw new Error('Cannot delete a user who is currently logged in.');
+    }
 
     // Filter out the user to delete
     const updatedUsers = state.usersRegistered.filter(
-      (user) => user.email !== action.payload
+      (user) => user.email !== emailToDelete
     );
 
-    // Update state and localStorage
+    // Update state
     ctx.patchState({
       usersRegistered: updatedUsers,
     });
-    localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
   }
 }

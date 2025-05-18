@@ -1,9 +1,9 @@
 .dashboard-container {
   padding: 24px;
-  
+
   .grid-section {
     margin-bottom: 40px;
-    .header{
+    .header {
       display: flex;
       justify-content: space-between;
       justify-items: center;
@@ -12,7 +12,6 @@
       margin-bottom: 16px;
       color: #3f51b5;
     }
-    
   }
 
   table {
@@ -33,9 +32,5 @@
 
   .failed {
     color: red;
-  }
-
-  mat-icon {
-    vertical-align: middle;
   }
 }
