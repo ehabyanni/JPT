@@ -33,25 +33,4 @@
   .failed {
     color: red;
   }
-
-  .mat-delete {
-    vertical-align: middle;
-    color: crimson;
-    cursor: pointer;
-    border-radius: 100%;
-    padding: 8px;
-    background-color: transparent;
-    &:hover {
-      background-color: rgba(139, 0, 0, 0.142);
-    }
-  }
-
-  .mat-logout {
-    vertical-align: middle;
-    color: darkred;
-    cursor: pointer;
-    &:hover {
-      color: crimson;
-    }
-  }
 }
