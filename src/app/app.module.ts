@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
@@ -12,6 +14,7 @@ import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
@@ -23,6 +26,7 @@ import { AuthState } from './store/auth/auth.state';
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,6 +44,10 @@ import { AuthState } from './store/auth/auth.state';
     ToastrModule.forRoot(),
     MatTableModule,
     MatIconModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
