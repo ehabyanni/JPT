@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { IUser } from '../_interfaces/IUser';
-import { Register } from '../store/auth/auth.state';
+import { AuthState, Register } from '../store/auth/auth.state';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -25,6 +25,11 @@ export class RegisterComponent implements OnInit {
   registerForm: any;
 
   ngOnInit(): void {
+    const isLoggedIn = !!this.store.selectSnapshot(AuthState.currentUser);
+    if (isLoggedIn) {
+      this.router.navigate(['/dashboard']);
+    }
+
     this.registerForm = this.formbuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
