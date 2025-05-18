@@ -5,6 +5,7 @@ import { Store } from '@ngxs/store';
 import { IUser } from '../_interfaces/IUser';
 import { AuthState, Register } from '../store/auth/auth.state';
 import { ToastrService } from 'ngx-toastr';
+import { minimumAgeValidator } from '../shared/custom-functoins/AgeFunction';
 
 @Component({
   selector: 'app-register',
@@ -36,7 +37,7 @@ export class RegisterComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       address: [''],
       phone_number: ['', [Validators.pattern(/^[0-9]{10}$/)]],
-      birthdate: [''],
+      birthdate: ['', [minimumAgeValidator(12)]],
     });
   }
 

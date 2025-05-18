@@ -5,7 +5,16 @@
       <form
         [formGroup]="registerForm"
         method="post"
-        (ngSubmit)="onSubmit({ name: NAME.value, email: EMAIL.value, password: PASSWORD.value, address: ADDRESS.value, phone_number: PHONE.value, date_of_birth: BIRTHDATE.value })"
+        (ngSubmit)="
+          onSubmit({
+            name: NAME.value,
+            email: EMAIL.value,
+            password: PASSWORD.value,
+            address: ADDRESS.value,
+            phone_number: PHONE.value,
+            date_of_birth: BIRTHDATE.value
+          })
+        "
         id="formID"
         class="formDiv"
       >
@@ -96,8 +105,13 @@
             placeholder="Enter your birthdate"
             formControlName="birthdate"
             autocomplete="off"
-            [class.is-invalid]="PHONE?.invalid && PHONE?.touched"
+            [class.is-invalid]="BIRTHDATE?.invalid && BIRTHDATE?.touched"
           />
+          <div *ngIf="BIRTHDATE?.invalid && BIRTHDATE?.touched">
+            <small *ngIf="BIRTHDATE?.errors?.minAge"
+              >You must be at least 12 years old.</small
+            >
+          </div>
         </div>
 
         <div class="subBtn">
@@ -115,7 +129,14 @@
         <a routerLink="/login">Login</a>
       </div>
 
-      <p style="color: red; font-size: 12px; margin-top: 10px; text-align: center;">
+      <p
+        style="
+          color: red;
+          font-size: 12px;
+          margin-top: 10px;
+          text-align: center;
+        "
+      >
         {{ registrationError }}
       </p>
     </div>
