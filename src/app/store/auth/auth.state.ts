@@ -172,10 +172,23 @@ export class AuthState {
   @Action(DeleteUser)
   deleteUser(ctx: StateContext<AuthStateModel>, action: DeleteUser) {
     const state = ctx.getState();
+    const emailToDelete = action.payload;
+
+    // Check if the user is currently logged in (in usersLogged array)
+    const isLoggedIn = state.usersLogged.some(
+      (entry) => entry.user.email === emailToDelete && entry.loggedIn
+    );
+
+    // Check if the user is the currentUser
+    const isCurrentUser = state.currentUser?.email === emailToDelete;
+
+    if (isLoggedIn || isCurrentUser) {
+      throw new Error('Cannot delete a user who is currently logged in.');
+    }
 
     // Filter out the user to delete
     const updatedUsers = state.usersRegistered.filter(
-      (user) => user.email !== action.payload
+      (user) => user.email !== emailToDelete
     );
 
     // Update state
