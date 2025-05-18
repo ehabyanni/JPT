@@ -49,23 +49,6 @@ export interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
-  ngxsOnInit(ctx: StateContext<AuthStateModel>) {
-    const storedUsers = localStorage.getItem('usersRegistered');
-    const storedLogins = localStorage.getItem('usersLogged');
-
-    if (storedUsers) {
-      ctx.patchState({
-        usersRegistered: JSON.parse(storedUsers),
-      });
-    }
-
-    if (storedLogins) {
-      ctx.patchState({
-        usersLogged: JSON.parse(storedLogins),
-      });
-    }
-  }
-
   @Selector()
   static usersRegistered(state: AuthStateModel): IUser[] {
     return state.usersRegistered;
@@ -111,7 +94,6 @@ export class AuthState {
         usersRegistered: updatedUsers,
         loading: false,
       });
-      localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
     }
   }
 
@@ -160,15 +142,13 @@ export class AuthState {
       usersLogged: updatedLoggedUsers,
       loading: false,
     });
-
-    localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>) {
     const currentUser = ctx.getState().currentUser;
     let updatedLoggedUsers = [...ctx.getState().usersLogged];
-    
+
     if (!currentUser) {
       throw new Error('No user is currently logged in.');
     }
@@ -185,8 +165,6 @@ export class AuthState {
       currentUser: null,
       usersLogged: updatedLoggedUsers,
     });
-
-    localStorage.setItem('usersLogged', JSON.stringify(updatedLoggedUsers));
   }
 
   @Action(DeleteUser)
@@ -202,6 +180,5 @@ export class AuthState {
     ctx.patchState({
       usersRegistered: updatedUsers,
     });
-    localStorage.setItem('usersRegistered', JSON.stringify(updatedUsers));
   }
 }
