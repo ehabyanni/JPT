@@ -22,15 +22,12 @@ export class DeleteUser {
   constructor(public payload: string) {} // payload will be user email
 }
 
-export class LoadFromStorage {
-  static readonly type = '[Auth] Load From Storage';
-}
-
 export interface AuthStateModel {
   usersRegistered: IUser[];
   usersLogged: Array<{
     user: IUser;
     loginTime: string;
+    loggedIn: boolean;
   }>;
   currentUser: IUser | null;
   loading: boolean;
@@ -57,7 +54,7 @@ export class AuthState {
   @Selector()
   static usersLogged(
     state: AuthStateModel
-  ): Array<{ user: IUser; loginTime: string }> {
+  ): Array<{ user: IUser; loginTime: string; loggedIn: boolean }> {
     return state.usersLogged;
   }
 
@@ -132,6 +129,7 @@ export class AuthState {
     const loginEntry = {
       user,
       loginTime: new Date().toISOString(),
+      loggedIn: true,
     };
 
     const updatedLoggedUsers = [...state.usersLogged, loginEntry];
@@ -147,18 +145,22 @@ export class AuthState {
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>) {
     const currentUser = ctx.getState().currentUser;
-    let updatedLoggedUsers = [...ctx.getState().usersLogged];
+    let usersLogged = [...ctx.getState().usersLogged];
 
     if (!currentUser) {
       throw new Error('No user is currently logged in.');
     }
 
-    // Remove current user from logged users if exists
-    if (currentUser) {
-      updatedLoggedUsers = updatedLoggedUsers.filter(
-        (entry) => entry.user.email !== currentUser.email
-      );
-    }
+    // Update the loggedIn flag to false for the current user
+    const updatedLoggedUsers = usersLogged.map((entry) => {
+      if (entry.user.email === currentUser.email) {
+        return {
+          ...entry,
+          loggedIn: false, // update loggedIn flag instead of removing
+        };
+      }
+      return entry;
+    });
 
     // Update state and storage
     ctx.patchState({
